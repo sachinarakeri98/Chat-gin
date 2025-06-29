@@ -2,10 +2,8 @@
   const urlParams = new URLSearchParams(window.location.search);
   const username = urlParams.get("user") || "Anonymous";
 
-  // Always use secure WebSocket if you're on HTTPS
   const wsProtocol = location.protocol === "https:" ? "wss" : "ws";
   const ws = new WebSocket(`${wsProtocol}://${location.host}/ws`);
-
 
   ws.onmessage = function (event) {
     const msg = JSON.parse(event.data);
