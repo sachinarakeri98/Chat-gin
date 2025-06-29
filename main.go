@@ -39,7 +39,7 @@ func main() {
 			c.Redirect(http.StatusFound, "/login")
 			return
 		}
-		c.HTML(http.StatusOK, "index.html", gin.H{"user": user})
+		c.HTML(http.StatusOK, "chat.html", gin.H{"user": user}) // ✅ renamed correctly
 	})
 
 	router.GET("/ws", func(c *gin.Context) {
