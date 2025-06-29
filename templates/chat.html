@@ -6,6 +6,7 @@
   const wsProtocol = location.protocol === "https:" ? "wss" : "ws";
   const ws = new WebSocket(`${wsProtocol}://${location.host}/ws`);
 
+
   ws.onmessage = function (event) {
     const msg = JSON.parse(event.data);
     const li = document.createElement("li");
