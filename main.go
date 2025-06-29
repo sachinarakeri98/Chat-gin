@@ -39,7 +39,7 @@ func main() {
 			c.Redirect(http.StatusFound, "/login")
 			return
 		}
-		c.HTML(http.StatusOK, "chat.html", gin.H{"user": user}) // ✅ renamed correctly
+		c.HTML(http.StatusOK, "chat.html", gin.H{"user": user}) // ✅ correct template
 	})
 
 	router.GET("/ws", func(c *gin.Context) {
@@ -53,22 +53,26 @@ func main() {
 }
 
 func handleWebSocket(w http.ResponseWriter, r *http.Request) {
+	log.Println("Client attempting WebSocket connection")
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Println("Upgrade error:", err)
+		log.Println("WebSocket upgrade error:", err)
 		return
 	}
 	defer ws.Close()
+	log.Println("✅ WebSocket connection established")
+
 	clients[ws] = true
 
 	for {
 		var msg Message
 		err := ws.ReadJSON(&msg)
 		if err != nil {
-			log.Println("Read error:", err)
+			log.Println("❌ WebSocket read error:", err)
 			delete(clients, ws)
 			break
 		}
+		log.Printf("📨 %s: %s", msg.Username, msg.Message)
 		broadcast <- msg
 	}
 }
@@ -79,7 +83,7 @@ func handleMessages() {
 		for client := range clients {
 			err := client.WriteJSON(msg)
 			if err != nil {
-				log.Println("Write error:", err)
+				log.Println("❌ WebSocket write error:", err)
 				client.Close()
 				delete(clients, client)
 			}
